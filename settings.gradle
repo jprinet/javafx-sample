@@ -1,0 +1,39 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+plugins {
+    id "com.gradle.enterprise" version "3.8-branch-master-prerelease"
+}
+
+rootProject.name = 'javafx-sample'
+
+gradleEnterprise {
+    server = "http://localhost:5086"
+
+    buildScan {
+        publishAlways()
+
+        uploadInBackground = System.getenv('CI') == null
+
+        capture {
+            taskInputFiles = true
+        }
+
+        buildCache {
+            local { enabled = true }
+            remote(HttpBuildCache) {
+                enabled = false
+                url = "http://localhost:5071/cache/"
+                push = true
+                allowUntrustedServer = true
+                allowInsecureProtocol = true
+            }
+        }
+    }
+}
